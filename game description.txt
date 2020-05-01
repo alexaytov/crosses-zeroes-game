@@ -1,0 +1,12 @@
+Name of the game: crosses-zeroes
+Type: board game
+Size of the board: 15x15
+
+The game required two players to be played. 
+One of the player is assigned corsses and the other is assigned zeroes at random.
+Crosses are represented by the letter X.
+The player with corsses starts first.
+The player assigned with 
+Each player places their assinged sign on one of the available fields. 
+After a filed has a zero/cross it is no longer available. 
+Winner: player who places their assigned sign five times horizontal, vertical or diagonal.
