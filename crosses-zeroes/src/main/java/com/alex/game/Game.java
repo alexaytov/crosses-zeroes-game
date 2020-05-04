@@ -2,22 +2,23 @@ package com.alex.game;
 
 import java.util.Arrays;
 
-@SuppressWarnings("Duplicates")
+
 public class Game {
 
     private int[][] matrix;
+    // ai
     private int firstPersonSign = 1;
+    // human
     private int secondPersonSign = 2;
-    private int GLOBAL_COUNTER = 0;
-    private Zobrist zobrist;
 
     public Game(int rows, int cols) {
         // TODO: 20/05/01 add validation
         this.matrix = new int[rows][cols];
-        zobrist = new Zobrist();
+        Zobrist zobrist = new Zobrist();
 
     }
 
+    // human make move
     public void setValue(int x, int y) {
         if (isOutOfBounds(x, y)) {
             throw new IllegalArgumentException("index out of bounds");
@@ -36,10 +37,7 @@ public class Game {
     }
 
     // 0 -> tie 1 -> first player 2-> second player
-    @SuppressWarnings("Duplicates")
     public int isGameEnded(int[][] matrix) {
-
-
         if (checkHorizontal(firstPersonSign, 5, matrix) || checkVertical(firstPersonSign, 5, matrix)) {
             return 1;
         }
@@ -48,47 +46,22 @@ public class Game {
             return 2;
         }
 
-        // diagonal check
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                int currentElement = matrix[i][j];
-                if (currentElement != 0) {
-                    // primary diagonal check
-                    int count = 0;
-                    for (int k = 1; k <= 4; k++) {
-                        if (isOutOfBounds(i - k, j + k) || currentElement != matrix[i - k][j + k]) {
-                            count = 0;
-                            break;
-                        } else {
-                            count++;
-                        }
-                    }
-                    if (count >= 4) {
-                        return currentElement;
-                    }
-                    // check secondary diagonal
-                    count = 0;
-                    for (int k = 1; k <= 4; k++) {
-                        if (isOutOfBounds(i + k, j + k) || currentElement != matrix[i + k][j + k]) {
-                            break;
-                        } else {
-                            count++;
-                        }
-                    }
-                    if (count >= 4) {
-                        return currentElement;
-                    }
-                }
-            }
+        if(evaluateDiagonal(firstPersonSign, 5, matrix) == 1){
+            return 1;
         }
+
+        if(evaluateDiagonal(secondPersonSign, 5, matrix) == 1){
+            return 2;
+        }
+
+        // tie
         return 0;
     }
 
-    @SuppressWarnings("Duplicates")
-    // 0 -> false 1 -> true 2 -> true withe other player nearby
-    public int evaluateVertical(int playerToCheck, int max, int[][] matrix) {
-        int withOpponentsCounter = 0;
-        int alone = 0;
+    // evaluate vertical combinations
+    private int evaluateVertical(int playerToCheck, int max, int[][] matrix) {
+        int combinationsWithOpponentBlocking = 0;
+        int combinationsWithoutBlockingOpponent = 0;
         for (int i = 0; i < matrix.length - max + 1; i++) {
             int counter = 0;
             for (int j = 0; j < matrix.length; j++) {
@@ -105,28 +78,27 @@ public class Game {
 //                    int nextElement = matrix[j+1][i];
 
                     if (isPreviousElementTheOpenonet ^ isNextElementTheOponent) {
-                        withOpponentsCounter++;
+                        combinationsWithOpponentBlocking++;
                     } else if (!isPreviousElementTheOpenonet) {
-                        alone++;
+                        combinationsWithoutBlockingOpponent++;
                     }
                 }
             }
         }
-
-        if (alone >= 1) {
-            return alone * 10;
+        if (combinationsWithoutBlockingOpponent >= 1) {
+            return combinationsWithoutBlockingOpponent * 10;
         }
-        if (withOpponentsCounter >= 1) {
-            return withOpponentsCounter;
+        if (combinationsWithOpponentBlocking >= 1) {
+            return combinationsWithOpponentBlocking;
         }
-
+        // either there are no combinations or current ones are being blocked
         return 0;
     }
 
-    // 0 -> no 1-> yes 2-> yes with other player nearby 3 -> more than once yes with one nearby 4 -> more than one without opponents
-    public int evaluateHorizontal(int playerToCheck, int max, int[][] matrix) {
-        int withOpponentsCounter = 0;
-        int alone = 0;
+    // evaluate horizontal combinations
+    private int evaluateHorizontal(int playerToCheck, int max, int[][] matrix) {
+        int combinationsWithBlockingOpponent = 0;
+        int combinationsWithoutBlockingOpponent = 0;
         for (int i = 0; i < matrix.length; i++) {
             int counter = 0;
             for (int j = 0; j < matrix.length - max + 1; j++) {
@@ -143,25 +115,24 @@ public class Game {
 //                    int nextElement = matrix[i][j+1];
 
                     if (isPreviousElementTheOpenonet ^ isNextElementTheOponent) {
-                        withOpponentsCounter++;
+                        combinationsWithBlockingOpponent++;
                     } else if (!isPreviousElementTheOpenonet) {
-                        alone++;
+                        combinationsWithoutBlockingOpponent++;
                     }
-
-
                 }
             }
         }
-        if (alone >= 1) {
-            return alone * 10;
+        if (combinationsWithoutBlockingOpponent >= 1) {
+            return combinationsWithoutBlockingOpponent * 10;
         }
-        if (withOpponentsCounter >= 1) {
-            return withOpponentsCounter;
+        if (combinationsWithBlockingOpponent >= 1) {
+            return combinationsWithBlockingOpponent;
         }
-
+        // either there are no combinations or present combinations are blocked
         return 0;
     }
 
+    // check if there is a vertical winner
     private boolean checkVertical(int playerToCheck, int max, int[][] matrix) {
         for (int i = 0; i < matrix.length; i++) {
             int counter = 0;
@@ -179,28 +150,17 @@ public class Game {
         return false;
     }
 
-    @SuppressWarnings("Duplicates")
+    // check if there is horizontal winner
     private boolean checkHorizontal(int playerToCheck, int max, int[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
+        for (int[] row : matrix) {
             int counter = 0;
-            for (int j = 0; j < matrix[i].length; j++) {
-                if (matrix[i][j] == playerToCheck) {
+            for (int element : row) {
+                if (element == playerToCheck) {
                     counter++;
                 } else {
                     counter = 0;
                 }
                 if (counter == max) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isAvailableFields() {
-        for (int[] row : matrix) {
-            for (int element : row) {
-                if (element == 0) {
                     return true;
                 }
             }
@@ -214,7 +174,6 @@ public class Game {
         int bestMoveX = -1;
         int bestMoveY = -1;
         // traverse all cells and check each one minimax score and pick the best one
-        int[][] scoreMatrix = new int[15][15];
 
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
@@ -222,9 +181,10 @@ public class Game {
 
                     // make the move
                     matrix[i][j] = firstPersonSign;
+
                     int[][] copyOfNode = Arrays.stream(matrix).map(int[]::clone).toArray(int[][]::new);
+                    // get score for current move
                     int moveScore = minimax(copyOfNode, 1, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
-                    scoreMatrix[i][j] = moveScore;
                     // undo the move
                     matrix[i][j] = 0;
 
@@ -237,30 +197,25 @@ public class Game {
                 }
             }
         }
-
-        System.out.println("This is the score matrix");
-        printMatrix(scoreMatrix);
-        System.out.println();
-
-        System.out.println(" Best move is " + bestMoveX + bestMoveY);
-
+        // make the best move
         matrix[bestMoveX][bestMoveY] = firstPersonSign;
     }
 
-    // 0-> no 1-> yes 2-> yes with nearby
+    // evaluates the primary and secondary diagonal for combinations
     public int evaluateDiagonal(int playerToCheck, int max, int[][] matrix) {
-        int alone = 0;
-        int withOpponentsCounter = 0;
+        // counter for number of combinations found where the opponent is not
+        // blocking in either direction
+        int combinationWithoutBlockingOpponent = 0;
+        // counter for number of combinations if the opponent is blocking in either direction
+        int combinationWithBlockingOpponent = 0;
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-//                int currentElement = matrix[i][j];
                 if (matrix[i][j] == playerToCheck) {
                     // primary diagonal check
                     int count = 1;
                     for (int k = 1; k < max; k++) {
                         if (!isOutOfBounds(i - k, j + k) && playerToCheck == matrix[i - k][j + k]) {
                             count++;
-
                         } else {
                             count = 0;
                             break;
@@ -273,9 +228,9 @@ public class Game {
 //                        int nextElement = matrix[i - max][j + max];
 
                         if (isPreviousElementTheOpponents ^ isNextElementTheOpponent) {
-                            withOpponentsCounter++;
+                            combinationWithBlockingOpponent++;
                         } else if (!isPreviousElementTheOpponents) {
-                            alone++;
+                            combinationWithoutBlockingOpponent++;
                         }
                     }
                     // check secondary diagonal
@@ -296,71 +251,54 @@ public class Game {
 //                        int nextElement = matrix[i + max][j + max];
 
                         if (isPreviousElementOpponent ^ isNextElementOpponent) {
-                            withOpponentsCounter++;
+                            combinationWithBlockingOpponent++;
                         } else if (!isPreviousElementOpponent) {
-                            alone++;
+                            combinationWithoutBlockingOpponent++;
                         }
                     }
                 }
             }
         }
 
-        if(alone >= 1){
-            return alone*10;
+        if(combinationWithoutBlockingOpponent >= 1){
+            return combinationWithoutBlockingOpponent*10;
         }
-        if(withOpponentsCounter >= 1){
-            return withOpponentsCounter;
+        if(combinationWithBlockingOpponent >= 1){
+            return combinationWithBlockingOpponent;
         }
+        // there are either no combinations or there are already blocked
         return 0;
     }
 
     private int evaluateBoard(int[][] matrix) {
 
-        // evaluate vertical
+        // evaluate vertical for human
         int verticalSecond5 = evaluateVertical(secondPersonSign, 5, matrix);
         int verticalSecond4 = evaluateVertical(secondPersonSign, 4, matrix);
 
-//        if(verticalSecond5 != 0){
-//            return verticalSecond5 * -1;
-//        }
-//
-//        if(verticalSecond4 != 0){
-//            return verticalSecond4 * -1;
-//        }
-
-        // evaluate horizontal
+        // evaluate horizontal for human
         int horizontalSecond5 = evaluateHorizontal(secondPersonSign, 5, matrix);
         int horizontalSecond4 = evaluateHorizontal(secondPersonSign, 4, matrix);
 
-//        if(horizontalSecond5 != 0){
-//            return horizontalSecond5 * -1;
-//        }
-//
-//        if(horizontalSecond4 != 0){
-//            return horizontalSecond4 * -1;
-//        }
-
+        // evaluate diagonal for human
         int evaluateDiagonal5 = evaluateDiagonal(secondPersonSign, 5, matrix);
         int evaluateDiagonal4 = evaluateDiagonal(secondPersonSign, 4, matrix);
 
-//        if(evaluateDiagonal5 != 0){
-//            return evaluateDiagonal5 * -1;
-//        }
-//
-//        if(evaluateDiagonal4 != 0){
-//            return evaluateDiagonal4 * -1;
-//        }
-
+        // evaluate if ai is able to win in the next move
         int hplus = evaluateHorizontal(firstPersonSign, 5, matrix);
         int vplus = evaluateVertical(firstPersonSign, 5, matrix);
         int dplus = evaluateDiagonal(firstPersonSign, 5, matrix);
 
+        // if ai cna win it should always take the move
         if(hplus > 0 || vplus > 0 || dplus > 0){
             return 1;
         }
 
+        // figure out best blocking decision
         int negative = (horizontalSecond4 + horizontalSecond5 + verticalSecond4 + verticalSecond5 + evaluateDiagonal4 + evaluateDiagonal5) * -1;
 
+        // if a blocking position is not needed ai should take the best move
+        // based on itself wining
         if(negative == 0){
             return evaluateHorizontal(firstPersonSign, 4, matrix) +
             hplus +
@@ -370,43 +308,38 @@ public class Game {
             dplus;
         }
 
+        // return the best blocking position
         return negative;
 
     }
 
     private int minimax(int[][] node, int depth, boolean isMax, int alpha, int beta) {
-//        if(depth == 0 || !isMovesLeft(node)){
-//            return evaluateBoard(node);
-//        }
-
         int boardScore = evaluateBoard(node);
-//        if(boardScore != 0 || !isMovesLeft(node)){
-//            return boardScore;
-//        }
+
         if (depth == 0 || !isMovesLeft(node)) {
             return boardScore;
         }
-        // copy array
-
-
+        // maximizing player
         if (isMax) {
             int maxEvaluation = Integer.MIN_VALUE;
             for (int i = 0; i < node.length; i++) {
                 for (int j = 0; j < node[i].length; j++) {
-
-                    // make move
                     if (node[i][j] == 0) {
+                        // make possible move
                         node[i][j] = firstPersonSign;
 
+                        // calculate current evaluation
                         int evaluation = minimax(node, depth - 1, false, alpha, beta);
 
+                        // get best evaluation
                         maxEvaluation = Integer.max(evaluation, maxEvaluation);
 
                         alpha = Integer.max(alpha, maxEvaluation);
 
-                        zobrist.addEntry(node, new PositionInformation(evaluation, alpha, beta));
-
+                        // undo move
                         node[i][j] = 0;
+
+                        // check for alpha beta pruning
                         if (beta <= alpha) {
                             break;
                         }
@@ -416,23 +349,28 @@ public class Game {
             }
             return maxEvaluation;
         } else {
+            // minimizing player
             int minEvaluation = Integer.MAX_VALUE;
 
             for (int i = 0; i < node.length; i++) {
                 for (int j = 0; j < node[i].length; j++) {
 
                     if (node[i][j] == 0) {
-                        // make move
+                        // make possible move
                         node[i][j] = secondPersonSign;
 
+                        // evaluate move
                         int evaluation = minimax(node, depth - 1, true, alpha, beta);
 
+                        // get best move
                         minEvaluation = Integer.min(evaluation, minEvaluation);
 
                         beta = Integer.min(beta, minEvaluation);
 
-                        zobrist.addEntry(matrix, new PositionInformation(evaluation, alpha, beta));
+                        // undo move
                         node[i][j] = 0;
+
+                        // check for alpha beta pruning
                         if (beta <= alpha) {
                             break;
                         }
@@ -443,6 +381,7 @@ public class Game {
         }
     }
 
+    // checks if there are any available moves
     private boolean isMovesLeft(int[][] matrix) {
         for (int[] row : matrix) {
             for (int elem : row) {
@@ -470,10 +409,10 @@ public class Game {
         }
     }
 
-    public void printMatrix(int[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.printf("%d\t", matrix[i][j]);
+    private void printMatrix(int[][] matrix) {
+        for (int[] row : matrix) {
+            for (int element : row) {
+                System.out.printf("%d\t", element);
             }
             System.out.println();
         }
