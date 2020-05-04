@@ -3,4 +3,4 @@ target
 *.iml
 out
 details
-text.*
+test.*
