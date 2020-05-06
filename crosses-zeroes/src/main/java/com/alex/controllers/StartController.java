@@ -16,9 +16,6 @@ import java.util.ResourceBundle;
 public class StartController implements Initializable {
 
     @FXML
-    private RadioButton oSign;
-
-    @FXML
     private RadioButton xSign;
 
     @FXML
@@ -26,9 +23,6 @@ public class StartController implements Initializable {
 
     @FXML
     private RadioButton aiXSign;
-
-    @FXML
-    private RadioButton aiOSign;
 
     @FXML
     private void startGame() {
@@ -39,9 +33,7 @@ public class StartController implements Initializable {
     }
 
     private Game initGame() {
-        Game game = new Game(15, 15, aiToggleButton.isSelected(), xSign.isSelected(), aiXSign.isSelected());
-
-        return game;
+        return new Game(15, 15, aiToggleButton.isSelected(), xSign.isSelected(), aiXSign.isSelected());
     }
 
     @FXML

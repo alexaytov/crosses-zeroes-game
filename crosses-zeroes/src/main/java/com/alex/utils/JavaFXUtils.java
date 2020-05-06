@@ -30,7 +30,7 @@ public class JavaFXUtils {
         return loader;
     }
 
-    public static void winnerPopUp(String message) {
+    public static void popUp(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Ended");
         alert.setHeaderText(null);
