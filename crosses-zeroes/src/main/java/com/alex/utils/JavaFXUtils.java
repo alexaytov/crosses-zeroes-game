@@ -24,7 +24,7 @@ public class JavaFXUtils {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle("sample title");
+        stage.setTitle("CROSSES AND ZEROES");
         stage.show();
         App.setStage(stage);
         return loader;

@@ -42,10 +42,8 @@ public class PrimaryController implements Initializable {
 
     private void buttonClicked(int x, int y) {
         try {
-            game.setValue(x, y);
+            int isGameEnded = game.setValue(x, y);
             updateView(game.getMatrix());
-
-            int isGameEnded = game.isGameEnded(game.getMatrix());
 
             if (isGameEnded == 1) {
                 JavaFXUtils.popUp("X player wins");
@@ -56,13 +54,17 @@ public class PrimaryController implements Initializable {
                 JavaFXUtils.popUp("O player wins");
                 game.reset();
             }
+
+            if (isGameEnded == 0) {
+                JavaFXUtils.popUp("Tie");
+            }
             updateView(game.getMatrix());
         } catch (IllegalArgumentException ex) {
             System.out.println(ex.getMessage());
         }
     }
 
-     private void updateView(int[][] currentMatrix) {
+    private void updateView(int[][] currentMatrix) {
         for (int i = 0; i < currentMatrix.length; i++) {
             for (int j = 0; j < currentMatrix[i].length; j++) {
                 if (currentMatrix[i][j] == 0) {
