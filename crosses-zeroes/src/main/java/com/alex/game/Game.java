@@ -46,7 +46,7 @@ public class Game {
         }
 
         if (isTaken(matrix[x][y])) {
-            throw new IllegalArgumentException("element already chosen");
+            JavaFXUtils.popUp("Element is already chosen");
         }
         if (ai) {
             moveCounter++;

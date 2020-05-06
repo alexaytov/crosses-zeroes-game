@@ -4,14 +4,14 @@ Size of the board: 15x15
 
 Game descirption:
 
-The game required two players to be played. 
-One of the player is assigned corsses and the other is assigned zeroes at random.
+The game requires two players to be played. 
+One of the player is assigned corsses and the other is assigned zeroes.
 Crosses are represented by the letter X.
-The player with corsses starts first.
-The player assigned with 
+Zeroes are reprenseted by the letter O.
+Empty cell is represented by the number 0.
 Each player places their assinged sign on one of the available fields. 
 After a filed has a zero/cross it is no longer available. 
-Winner: player who places their assigned sign five times horizontal, vertical or diagonal.
+To win a player must place their assigned sign five times horizontal, vertical or diagonal.
 
 Functionality:
 
@@ -25,7 +25,7 @@ Implementation details:
 Dependencies:
 
 # Programming language: Java
-# Software platform: JavaFX
+# Software platform: JavaFX (with fxml)
 # Material design: JFoenix
 # Version control system: Git/GitHub
 
