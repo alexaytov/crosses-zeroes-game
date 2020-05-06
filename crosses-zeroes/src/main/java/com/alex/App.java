@@ -1,5 +1,7 @@
 package com.alex;
 
+import com.alex.utils.JavaFXUtils;
+import com.alex.utils.WindowsConstants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,12 +16,15 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
+    private static Stage stage;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"));
+        scene = new Scene(loadFXML("start"));
         stage.setScene(scene);
         stage.show();
+        App.stage = stage;
+
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -34,5 +39,14 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
+
+    public static void exitGame() {
+        stage.close();
+    }
+
+    public static void setStage(Stage stage){
+        App.stage = stage;
+    }
+
 
 }

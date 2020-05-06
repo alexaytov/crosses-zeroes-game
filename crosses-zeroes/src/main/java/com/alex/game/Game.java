@@ -6,51 +6,94 @@ import java.util.Arrays;
 public class Game {
 
     private int[][] matrix;
-    // ai
-    private int firstPersonSign = 1;
-    // human
-    private int secondPersonSign = 2;
+    private int xPersonSign;
+    private int oPersonSign;
+    private boolean ai;
+    private int moveCounter;
+    boolean isXFirst;
+    private boolean isXAISign;
 
-    public Game(int rows, int cols) {
-        // TODO: 20/05/01 add validation
+
+    public Game(int rows, int cols, boolean ai, boolean isXFirst, boolean isXAISign) {
+        if(rows <=0 || cols <= 0){
+            throw new IllegalArgumentException("Invalid rows or cols");
+        }
+        this.isXAISign = isXAISign;
+        this.xPersonSign = 1;
+        this.oPersonSign = 2;
+        this.moveCounter = 0;
+        this.isXFirst = isXFirst;
+        this.ai = ai;
         this.matrix = new int[rows][cols];
-        Zobrist zobrist = new Zobrist();
+        aiMakeMoveIfFirst();
+    }
 
+    private void aiMakeMoveIfFirst() {
+        if(ai){
+            if(isXAISign && isXFirst){
+                nextTurn();
+            }else if(!isXAISign && !isXFirst){
+                nextTurn();
+            }
+        }
     }
 
     // human make move
     public void setValue(int x, int y) {
-        if (isOutOfBounds(x, y)) {
-            throw new IllegalArgumentException("index out of bounds");
-        }
+        if(ai){
+            if (isOutOfBounds(x, y)) {
+                throw new IllegalArgumentException("index out of bounds");
+            }
 
-        int currElement = matrix[x][y];
-        if (isTaken(currElement)) {
-            throw new IllegalArgumentException("element already chosen");
-        }
+            int currElement = matrix[x][y];
+            if (isTaken(currElement)) {
+                throw new IllegalArgumentException("element already chosen");
+            }
 
-        matrix[x][y] = secondPersonSign;
+            if(isXAISign){
+                matrix[x][y] = oPersonSign;
+            }else{
+                matrix[x][y] = xPersonSign;
+            }
+            // ai makes turn
+            nextTurn();
+        }else{
+            if(isXFirst){
+                if(moveCounter % 2 == 0){
+                    matrix[x][y] = xPersonSign;
+                }else{
+                    matrix[x][y] = oPersonSign;
+                }
+            }else{
+                if(moveCounter % 2 == 0){
+                    matrix[x][y] = oPersonSign;
+                }else{
+                    matrix[x][y] = xPersonSign;
+                }
+            }
+        }
+        moveCounter++;
     }
 
     private boolean isTaken(int currElement) {
-        return currElement == firstPersonSign || currElement == 2;
+        return currElement == xPersonSign || currElement == 2;
     }
 
     // 0 -> tie 1 -> first player 2-> second player
     public int isGameEnded(int[][] matrix) {
-        if (checkHorizontal(firstPersonSign, 5, matrix) || checkVertical(firstPersonSign, 5, matrix)) {
+        if (checkHorizontal(xPersonSign, 5, matrix) || checkVertical(xPersonSign, 5, matrix)) {
             return 1;
         }
 
-        if (checkHorizontal(secondPersonSign, 5, matrix) || checkVertical(secondPersonSign, 5, matrix)) {
+        if (checkHorizontal(oPersonSign, 5, matrix) || checkVertical(oPersonSign, 5, matrix)) {
             return 2;
         }
 
-        if(evaluateDiagonal(firstPersonSign, 5, matrix) == 1){
+        if(evaluateDiagonal(xPersonSign, 5, matrix) == 1){
             return 1;
         }
 
-        if(evaluateDiagonal(secondPersonSign, 5, matrix) == 1){
+        if(evaluateDiagonal(oPersonSign, 5, matrix) == 1){
             return 2;
         }
 
@@ -180,7 +223,7 @@ public class Game {
                 if (matrix[i][j] == 0) {
 
                     // make the move
-                    matrix[i][j] = firstPersonSign;
+                    matrix[i][j] = xPersonSign;
 
                     int[][] copyOfNode = Arrays.stream(matrix).map(int[]::clone).toArray(int[][]::new);
                     // get score for current move
@@ -198,7 +241,11 @@ public class Game {
             }
         }
         // make the best move
-        matrix[bestMoveX][bestMoveY] = firstPersonSign;
+        if(isXAISign){
+            matrix[bestMoveX][bestMoveY] = xPersonSign;
+        }else {
+            matrix[bestMoveX][bestMoveY] = oPersonSign;
+        }
     }
 
     // evaluates the primary and secondary diagonal for combinations
@@ -273,21 +320,21 @@ public class Game {
     private int evaluateBoard(int[][] matrix) {
 
         // evaluate vertical for human
-        int verticalSecond5 = evaluateVertical(secondPersonSign, 5, matrix);
-        int verticalSecond4 = evaluateVertical(secondPersonSign, 4, matrix);
+        int verticalSecond5 = evaluateVertical(oPersonSign, 5, matrix);
+        int verticalSecond4 = evaluateVertical(oPersonSign, 4, matrix);
 
         // evaluate horizontal for human
-        int horizontalSecond5 = evaluateHorizontal(secondPersonSign, 5, matrix);
-        int horizontalSecond4 = evaluateHorizontal(secondPersonSign, 4, matrix);
+        int horizontalSecond5 = evaluateHorizontal(oPersonSign, 5, matrix);
+        int horizontalSecond4 = evaluateHorizontal(oPersonSign, 4, matrix);
 
         // evaluate diagonal for human
-        int evaluateDiagonal5 = evaluateDiagonal(secondPersonSign, 5, matrix);
-        int evaluateDiagonal4 = evaluateDiagonal(secondPersonSign, 4, matrix);
+        int evaluateDiagonal5 = evaluateDiagonal(oPersonSign, 5, matrix);
+        int evaluateDiagonal4 = evaluateDiagonal(oPersonSign, 4, matrix);
 
         // evaluate if ai is able to win in the next move
-        int hplus = evaluateHorizontal(firstPersonSign, 5, matrix);
-        int vplus = evaluateVertical(firstPersonSign, 5, matrix);
-        int dplus = evaluateDiagonal(firstPersonSign, 5, matrix);
+        int hplus = evaluateHorizontal(xPersonSign, 5, matrix);
+        int vplus = evaluateVertical(xPersonSign, 5, matrix);
+        int dplus = evaluateDiagonal(xPersonSign, 5, matrix);
 
         // if ai cna win it should always take the move
         if(hplus > 0 || vplus > 0 || dplus > 0){
@@ -300,11 +347,11 @@ public class Game {
         // if a blocking position is not needed ai should take the best move
         // based on itself wining
         if(negative == 0){
-            return evaluateHorizontal(firstPersonSign, 4, matrix) +
+            return evaluateHorizontal(xPersonSign, 4, matrix) +
             hplus +
-            evaluateVertical(firstPersonSign, 4, matrix) +
+            evaluateVertical(xPersonSign, 4, matrix) +
             vplus +
-            evaluateDiagonal(firstPersonSign, 4, matrix) +
+            evaluateDiagonal(xPersonSign, 4, matrix) +
             dplus;
         }
 
@@ -326,7 +373,7 @@ public class Game {
                 for (int j = 0; j < node[i].length; j++) {
                     if (node[i][j] == 0) {
                         // make possible move
-                        node[i][j] = firstPersonSign;
+                        node[i][j] = xPersonSign;
 
                         // calculate current evaluation
                         int evaluation = minimax(node, depth - 1, false, alpha, beta);
@@ -357,7 +404,7 @@ public class Game {
 
                     if (node[i][j] == 0) {
                         // make possible move
-                        node[i][j] = secondPersonSign;
+                        node[i][j] = oPersonSign;
 
                         // evaluate move
                         int evaluation = minimax(node, depth - 1, true, alpha, beta);
@@ -407,6 +454,8 @@ public class Game {
                 matrix[i][j] = 0;
             }
         }
+        moveCounter = 0;
+        aiMakeMoveIfFirst();
     }
 
     private void printMatrix(int[][] matrix) {
