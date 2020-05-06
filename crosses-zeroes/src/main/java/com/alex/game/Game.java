@@ -228,7 +228,6 @@ public class Game {
         int bestEvaluation = Integer.MIN_VALUE;
         int bestMoveX = -1;
         int bestMoveY = -1;
-        int[][] scoreMatrix = new int[15][15];
         // traverse all cells and check each one minimax score and pick the best one
 
         for (int i = 0; i < matrix.length; i++) {
@@ -243,7 +242,6 @@ public class Game {
                     int moveScore = minimax(copyOfNode, 1, !isXAISign, Integer.MIN_VALUE, Integer.MAX_VALUE);
                     // undo the move
                     matrix[i][j] = 0;
-                    scoreMatrix[i][j] = moveScore;
                     // if current move value is more than the best value update it
                     if (moveScore > bestEvaluation) {
                         bestEvaluation = moveScore;
@@ -260,16 +258,6 @@ public class Game {
         } else {
             matrix[bestMoveX][bestMoveY] = oPersonSign;
         }
-        System.out.println("print score matrix");
-
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.printf("%d\t", scoreMatrix[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println();
-        System.out.println();
     }
 
     // evaluates the primary and secondary diagonal for combinations
@@ -420,9 +408,9 @@ public class Game {
                         node[i][j] = 0;
 
                         // check for alpha beta pruning
-//                        if (beta <= alpha) {
-//                            break;
-//                        }
+                        if (beta <= alpha) {
+                            break;
+                        }
 
                     }
                 }
@@ -453,9 +441,9 @@ public class Game {
                         node[i][j] = 0;
 
                         // check for alpha beta pruning
-//                        if (beta <= alpha) {
-//                            break;
-//                        }
+                        if (beta <= alpha) {
+                            break;
+                        }
                     }
                 }
             }

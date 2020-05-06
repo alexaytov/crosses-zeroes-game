@@ -1,5 +1,6 @@
 package com.alex;
 
+import com.alex.utils.GlobalConstants;
 import com.alex.utils.JavaFXUtils;
 import com.alex.utils.WindowsConstants;
 import javafx.application.Application;
@@ -9,6 +10,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+
+import static com.alex.utils.GlobalConstants.WINDWOS_TITLE;
 
 /**
  * JavaFX App
@@ -22,7 +25,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("start"));
         stage.setScene(scene);
-        stage.setTitle("CROSSES AND ZEROES");
+        stage.setTitle(WINDWOS_TITLE);
         stage.show();
         App.stage = stage;
 

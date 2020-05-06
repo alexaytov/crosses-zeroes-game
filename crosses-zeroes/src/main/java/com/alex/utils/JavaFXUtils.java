@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.alex.utils.GlobalConstants.WINDWOS_TITLE;
+
 public class JavaFXUtils {
 
     public static FXMLLoader loadWindow(String fxmlPath, int width, int height) {
@@ -24,7 +26,7 @@ public class JavaFXUtils {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle("CROSSES AND ZEROES");
+        stage.setTitle(WINDWOS_TITLE);
         stage.show();
         App.setStage(stage);
         return loader;
