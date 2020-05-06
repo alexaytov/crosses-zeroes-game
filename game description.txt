@@ -2,6 +2,8 @@ Name of the game: crosses-zeroes
 Type: board game
 Size of the board: 15x15
 
+Game descirption:
+
 The game required two players to be played. 
 One of the player is assigned corsses and the other is assigned zeroes at random.
 Crosses are represented by the letter X.
@@ -10,3 +12,31 @@ The player assigned with
 Each player places their assinged sign on one of the available fields. 
 After a filed has a zero/cross it is no longer available. 
 Winner: player who places their assigned sign five times horizontal, vertical or diagonal.
+
+Functionality:
+
+# Choice of which sign starts first.
+# Choice to play against an AI or two player mode.
+# Choice of which sign the AI uses.
+# Reset a current game at any given time
+
+Implementation details:
+
+Dependencies:
+
+# Programming language: Java
+# Software platform: JavaFX
+# Material design: JFoenix
+# Version control system: Git/GitHub
+
+# Algorithm used: minimax
+
+Because of the high branching factor, the minimax algorithm is limited to look only one state ahead. 
+If the algorithm looks more than one state ahead a noticable delay occurs.
+Because of this limitation a better and more complex evaluation function is needed.
+The evalution function grades not only the end states where there is a certain winner, but also
+the two to three states leading up the the end state. The end state is when one of the players is established
+as a winner or the game ends in a draw.
+
+The AI choices are mostly influenced by the opponent actions, but if the AI sees and opurtunity to win
+it will take it instead of blocking the opponent.
