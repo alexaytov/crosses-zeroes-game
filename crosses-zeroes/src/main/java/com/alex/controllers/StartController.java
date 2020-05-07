@@ -38,7 +38,7 @@ public class StartController implements Initializable {
 
     @FXML
     private void exitGame() {
-        App.exitGame();
+        JavaFXUtils.exitGame();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.alex.utils;
 
-import com.alex.App;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,6 +11,8 @@ import java.io.IOException;
 import static com.alex.utils.GlobalConstants.WINDWOS_TITLE;
 
 public class JavaFXUtils {
+
+    private static Stage stage;
 
     public static FXMLLoader loadWindow(String fxmlPath, int width, int height) {
         FXMLLoader loader = new FXMLLoader(JavaFXUtils.class.getResource(fxmlPath));
@@ -28,8 +29,12 @@ public class JavaFXUtils {
         stage.setResizable(false);
         stage.setTitle(WINDWOS_TITLE);
         stage.show();
-        App.setStage(stage);
+        JavaFXUtils.stage = stage;
         return loader;
+    }
+
+    public static void exitGame() {
+        stage.close();
     }
 
     public static void popUp(String message) {

@@ -101,7 +101,7 @@ public class PrimaryController implements Initializable {
 
     @FXML
     private void exitGame() {
-        App.exitGame();
+        JavaFXUtils.exitGame();
     }
 
     void setGame(Game game) {

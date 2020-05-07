@@ -236,7 +236,6 @@ public class Game {
 
                     // make the move
                     matrix[i][j] = isXAISign ? xPersonSign : oPersonSign;
-
                     int[][] copyOfNode = Arrays.stream(matrix).map(int[]::clone).toArray(int[][]::new);
                     // get score for current move
                     int moveScore = minimax(copyOfNode, 1, !isXAISign, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -261,7 +260,7 @@ public class Game {
     }
 
     // evaluates the primary and secondary diagonal for combinations
-    public int evaluateDiagonal(int playerToCheck, int max, int[][] matrix) {
+    private int evaluateDiagonal(int playerToCheck, int max, int[][] matrix) {
         // counter for number of combinations found where the opponent is not
         // blocking in either direction
         int combinationWithoutBlockingOpponent = 0;
@@ -291,7 +290,6 @@ public class Game {
                         } else if (!isPreviousElementTheOpponents) {
                             combinationWithoutBlockingOpponent++;
                         }
-                        count = 0;
                     }
                     // check secondary diagonal
                     count = 1;
