@@ -23,16 +23,17 @@ public class PrimaryController implements Initializable {
     private String emptySign = "0";
 
     private void initMatrix(Button[][] matrix) {
-
         for (int i = 0; i < matrix.length; i++) {
             HBox hbox = new HBox();
             for (int j = 0; j < matrix[i].length; j++) {
                 Button btn = new Button(emptySign);
                 btn.setStyle("-fx-background-color: white; -fx-min-width: 50; -fx-border-color: black; -fx-min-height: 30;");
+
                 int finalI = i;
                 int finalJ = j;
                 btn.setOnMouseClicked(mouseEvent -> buttonClicked(finalI, finalJ));
                 matrix[i][j] = btn;
+
                 hbox.getChildren().add(btn);
             }
             vBox.getChildren().add(hbox);

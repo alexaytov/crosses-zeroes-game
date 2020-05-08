@@ -23,6 +23,7 @@ public class Game {
         if (rows <= 0 || cols <= 0) {
             throw new IllegalArgumentException("Invalid rows or cols");
         }
+
         this.isXAISign = isXAISign;
         this.xPersonSign = 1;
         this.oPersonSign = 2;
@@ -30,6 +31,7 @@ public class Game {
         this.isXFirst = isXFirst;
         this.ai = ai;
         this.matrix = new int[rows][cols];
+
         aiMakeMoveIfFirst();
     }
 
@@ -43,7 +45,7 @@ public class Game {
         }
     }
 
-    // human make move
+    // make move
     public int setValue(int x, int y) {
         if (isOutOfBounds(x, y)) {
             throw new IllegalArgumentException("index out of bounds");
@@ -59,10 +61,10 @@ public class Game {
                 } else {
                     matrix[x][y] = xPersonSign;
                 }
-                // ai makes turn
                 if (isGameEnded(matrix) != -1) {
                     return isGameEnded(matrix);
                 }
+                // ai makes turn
                 nextTurn();
                 if (isGameEnded(matrix) != -1) {
                     return isGameEnded(matrix);
@@ -90,7 +92,6 @@ public class Game {
                     return isGameEnded(matrix);
                 }
             }
-
         }
         return -1;
     }
@@ -99,7 +100,7 @@ public class Game {
         return currElement == xPersonSign || currElement == oPersonSign;
     }
 
-    // 0 -> tie 1 -> X wins 2-> O wins
+    // -1 > still playing 0 -> tie 1 -> X wins 2-> O wins
     private int isGameEnded(int[][] matrix) {
         if (checkHorizontal(xPersonSign, 5, matrix) || checkVertical(xPersonSign, 5, matrix) || (evaluateDiagonal(xPersonSign, 5, matrix) > 0)) {
             return 1;
@@ -134,8 +135,8 @@ public class Game {
         if (!winnerElements.isEmpty()) {
             return winnerElements;
         }
-        winnerElements = getVerticalWinnerElements(xPersonSign);
 
+        winnerElements = getVerticalWinnerElements(xPersonSign);
         if (!winnerElements.isEmpty()) {
             return winnerElements;
         }
@@ -144,8 +145,8 @@ public class Game {
         if (!winnerElements.isEmpty()) {
             return winnerElements;
         }
-        return getDiagonalWinnerElements(xPersonSign);
 
+        return getDiagonalWinnerElements(xPersonSign);
     }
 
     private List<Integer> getDiagonalWinnerElements(int playerSign) {
@@ -289,9 +290,9 @@ public class Game {
                 }
                 if (counter == max) {
                     boolean isPreviousElementTheOpponentOrWall = isOutOfBounds(i, j - max) || (matrix[i][j - max] != 0 && matrix[i][j - max] != playerToCheck);
-//                    int previousElement = matrix[i][j - max];
+                    // int previousElement = matrix[i][j - max];
                     boolean isNextElementTheOpponentOrWall = isOutOfBounds(i, j + 1) || (matrix[i][j + 1] != 0 && matrix[i][j + 1] != playerToCheck);
-//                    int nextElement = matrix[i][j+1];
+                    // int nextElement = matrix[i][j+1];
 
                     if (isPreviousElementTheOpponentOrWall ^ isNextElementTheOpponentOrWall) {
                         combinationsWithBlockingOpponent++;
@@ -378,7 +379,6 @@ public class Game {
         // make the best move
         if (isXAISign) {
             matrix[bestMoveX][bestMoveY] = xPersonSign;
-
         } else {
             matrix[bestMoveX][bestMoveY] = oPersonSign;
         }
@@ -406,9 +406,9 @@ public class Game {
                     }
                     if (count == max) {
                         boolean isPreviousElementTheOpponents = isOutOfBounds(i + 1, j - 1) || (matrix[i + 1][j - 1] != 0 && matrix[i + 1][j - 1] != playerToCheck);
-//                        int previousElement = matrix[i + 1][j - 1];
+                        // int previousElement = matrix[i + 1][j - 1];
                         boolean isNextElementTheOpponent = isOutOfBounds(i - max, j + max) || (matrix[i - max][j + max] != 0 && matrix[i - max][j + max] != playerToCheck);
-//                        int nextElement = matrix[i - max][j + max];
+                        // int nextElement = matrix[i - max][j + max];
 
                         if (isPreviousElementTheOpponents ^ isNextElementTheOpponent) {
                             combinationWithBlockingOpponent++;
@@ -429,7 +429,7 @@ public class Game {
                     if (count == max) {
 
                         boolean isPreviousElementOpponent = !isOutOfBounds(i - 1, j - 1) && matrix[i - 1][j - 1] != 0 && matrix[i - 1][j - 1] != playerToCheck;
-//                        int previousElement = matrix[i - 1][j - 1];
+                        // int previousElement = matrix[i - 1][j - 1];
                         boolean isNextElementOpponent = !isOutOfBounds(i + max, j + max) && matrix[i + max][j + max] != 0 && matrix[i + max][j + max] != playerToCheck;
 //                        int nextElement = matrix[i + max][j + max];
 
@@ -442,7 +442,6 @@ public class Game {
                 }
             }
         }
-
         if (combinationWithoutBlockingOpponent >= 1) {
             return combinationWithoutBlockingOpponent * 100;
         }
@@ -464,13 +463,12 @@ public class Game {
             personSign = xPersonSign;
         }
 
-
         // evaluate if ai is able to win in the next move
         boolean hplus = checkHorizontal(aiSign, 5, matrix);
         boolean vplus = checkVertical(aiSign, 5, matrix);
         int dplus = evaluateDiagonal(aiSign, 5, matrix);
 
-        // if ai cna win it should always take the move
+        // if ai can win it should always take the move
         if (hplus || vplus || dplus > 0) {
             return 1000;
         }
@@ -523,7 +521,6 @@ public class Game {
                         int evaluation = minimax(node, depth - 1, false, alpha, beta);
 
                         // get best evaluation
-//                        maxEvaluation = Integer.max(evaluation, maxEvaluation);
                         maxEvaluation += evaluation;
                         alpha = Integer.max(alpha, maxEvaluation);
 
@@ -553,9 +550,7 @@ public class Game {
                         // evaluate move
                         int evaluation = minimax(node, depth - 1, true, alpha, beta);
 
-                        // get best move
-//                        minEvaluation = Integer.min(evaluation, minEvaluation);
-
+                        // get best evaluation
                         minEvaluation += evaluation;
 
                         beta = Integer.min(beta, minEvaluation);

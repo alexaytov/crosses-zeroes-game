@@ -1,6 +1,5 @@
 package com.alex.controllers;
 
-import com.alex.App;
 import com.alex.game.Game;
 import com.alex.utils.JavaFXUtils;
 import com.alex.utils.WindowsConstants;
@@ -28,6 +27,7 @@ public class StartController implements Initializable {
     private void startGame() {
         xSign.getScene().getWindow().hide();
         FXMLLoader loader = JavaFXUtils.loadWindow(WindowsConstants.PRIMARY_PATH, WindowsConstants.PRIMARY_WIDTH, WindowsConstants.PRIMARY_HEIGHT);
+
         PrimaryController primaryController = loader.getController();
         primaryController.setGame(initGame());
     }
