@@ -1,4 +1,4 @@
-Name of the game: crosses-zeroes
+Name of the game: crosses and zeroes
 Type: board game
 Size of the board: 15x15
 
@@ -10,14 +10,20 @@ Crosses are represented by the letter X.
 Zeroes are reprenseted by the letter O.
 Empty cell is represented by the number 0.
 Each player places their assinged sign on one of the available fields. 
-After a filed has a zero/cross it is no longer available. 
-To win a player must place their assigned sign five times horizontal, vertical or diagonal.
+After a filed has a zero/cross on it, it is no longer available. 
+To win a player must place their assigned sign five times in a row in one 
+of these directions - horizontal, vertical or diagonal.
+The game ends in one of three ways.
+# X player wins
+# O player wins
+# There are no available cells to fill - tie.
 
 Functionality:
 
-# Choice of which sign starts first.
-# Choice to play against an AI or two player mode.
-# Choice of which sign the AI uses.
+# Which sign starts first.
+# AI mode.
+# Two player mode.
+# Which sign the AI uses.
 # Reset a current game at any given time
 
 Implementation details:
@@ -25,7 +31,7 @@ Implementation details:
 Dependencies:
 
 # Programming language: Java
-# Software platform: JavaFX (with fxml)
+# Software platform: JavaFX
 # Material design: JFoenix
 # Version control system: Git/GitHub
 
@@ -34,7 +40,7 @@ Dependencies:
 Because of the high branching factor, the minimax algorithm is limited to look only one state ahead. 
 If the algorithm looks more than one state ahead a noticable delay occurs.
 Because of this limitation a better and more complex evaluation function is needed.
-The evalution function grades not only the end states where there is a certain winner, but also
+The evalution function grades not only the end states where there is a certain winner or tie, but also
 the two to three states leading up the the end state. The end state is when one of the players is established
 as a winner or the game ends in a draw.
 

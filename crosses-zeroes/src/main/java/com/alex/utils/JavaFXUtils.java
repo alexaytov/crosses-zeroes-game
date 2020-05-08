@@ -8,8 +8,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import static com.alex.utils.GlobalConstants.WINDWOS_TITLE;
-
 public class JavaFXUtils {
 
     private static Stage stage;
@@ -27,7 +25,7 @@ public class JavaFXUtils {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle(WINDWOS_TITLE);
+        stage.setTitle("Crosses And Zeroes");
         stage.show();
         JavaFXUtils.stage = stage;
         return loader;

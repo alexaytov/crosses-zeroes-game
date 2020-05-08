@@ -1,6 +1,5 @@
 package com.alex.controllers;
 
-import com.alex.App;
 import com.alex.game.Game;
 import com.alex.utils.JavaFXUtils;
 import com.alex.utils.WindowsConstants;
@@ -11,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class PrimaryController implements Initializable {
@@ -45,18 +45,25 @@ public class PrimaryController implements Initializable {
             int isGameEnded = game.setValue(x, y);
             updateView(game.getMatrix());
 
-            if (isGameEnded == 1) {
-                JavaFXUtils.popUp("X player wins");
-                game.reset();
-            }
+            if (isGameEnded != -1) {
+                List<Integer> winnerElements = game.getWinnerElements();
+                for (int i = 0; i < winnerElements.size() - 1; i += 2) {
+                    matrix[winnerElements.get(i)][winnerElements.get(i + 1)].setStyle("-fx-background-color:  #ff726b; -fx-min-width: 50; -fx-min-height: 30;");
+                }
 
-            if (isGameEnded == 2) {
-                JavaFXUtils.popUp("O player wins");
-                game.reset();
-            }
+                if (isGameEnded == 1) {
+                    JavaFXUtils.popUp("X player wins");
+                }
 
-            if (isGameEnded == 0) {
-                JavaFXUtils.popUp("Tie");
+                if (isGameEnded == 2) {
+                    JavaFXUtils.popUp("O player wins");
+
+                }
+
+                if (isGameEnded == 0) {
+                    JavaFXUtils.popUp("Tie");
+                }
+                game.reset();
             }
             updateView(game.getMatrix());
         } catch (IllegalArgumentException ex) {

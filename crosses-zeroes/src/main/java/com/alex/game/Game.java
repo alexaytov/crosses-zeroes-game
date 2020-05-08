@@ -2,9 +2,13 @@ package com.alex.game;
 
 import com.alex.utils.JavaFXUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 
+@SuppressWarnings("Duplicates")
 public class Game {
 
     private boolean isXFirst;
@@ -47,44 +51,46 @@ public class Game {
 
         if (isTaken(matrix[x][y])) {
             JavaFXUtils.popUp("Element is already chosen");
-        }
-        if (ai) {
-            moveCounter++;
-            if (isXAISign) {
-                matrix[x][y] = oPersonSign;
-            } else {
-                matrix[x][y] = xPersonSign;
-            }
-            // ai makes turn
-            if (isGameEnded(matrix) != -1) {
-                return isGameEnded(matrix);
-            }
-            nextTurn();
-            if (isGameEnded(matrix) != -1) {
-                return isGameEnded(matrix);
-            }
         } else {
-            if (isGameEnded(matrix) != -1) {
-                return isGameEnded(matrix);
-            }
-            if (isTaken(matrix[x][y])) {
-                JavaFXUtils.popUp("Element is already taken");
-            } else {
+            if (ai) {
                 moveCounter++;
-                if (isXFirst) {
-                    if (moveCounter % 2 == 0) {
-                        matrix[x][y] = xPersonSign;
-                    } else {
-                        matrix[x][y] = oPersonSign;
-                    }
+                if (isXAISign) {
+                    matrix[x][y] = oPersonSign;
                 } else {
-                    if (moveCounter % 2 == 0) {
-                        matrix[x][y] = oPersonSign;
+                    matrix[x][y] = xPersonSign;
+                }
+                // ai makes turn
+                if (isGameEnded(matrix) != -1) {
+                    return isGameEnded(matrix);
+                }
+                nextTurn();
+                if (isGameEnded(matrix) != -1) {
+                    return isGameEnded(matrix);
+                }
+            } else {
+                if (isTaken(matrix[x][y])) {
+                    JavaFXUtils.popUp("Element is already taken");
+                } else {
+                    if (isXFirst) {
+                        if (moveCounter % 2 == 0) {
+                            matrix[x][y] = xPersonSign;
+                        } else {
+                            matrix[x][y] = oPersonSign;
+                        }
                     } else {
-                        matrix[x][y] = xPersonSign;
+                        if (moveCounter % 2 == 0) {
+                            matrix[x][y] = oPersonSign;
+                        } else {
+                            matrix[x][y] = xPersonSign;
+                        }
                     }
+                    moveCounter++;
+                }
+                if (isGameEnded(matrix) != -1) {
+                    return isGameEnded(matrix);
                 }
             }
+
         }
         return -1;
     }
@@ -94,7 +100,7 @@ public class Game {
     }
 
     // 0 -> tie 1 -> X wins 2-> O wins
-    public int isGameEnded(int[][] matrix) {
+    private int isGameEnded(int[][] matrix) {
         if (checkHorizontal(xPersonSign, 5, matrix) || checkVertical(xPersonSign, 5, matrix) || (evaluateDiagonal(xPersonSign, 5, matrix) > 0)) {
             return 1;
         }
@@ -109,6 +115,125 @@ public class Game {
         }
 
         return -1;
+    }
+
+    public List<Integer> getWinnerElements() {
+        List<Integer> winnerElements;
+
+        winnerElements = getHorizontalWinnerElements(oPersonSign);
+        if (!winnerElements.isEmpty()) {
+            return winnerElements;
+        }
+
+        winnerElements = getHorizontalWinnerElements(xPersonSign);
+        if (!winnerElements.isEmpty()) {
+            return winnerElements;
+        }
+
+        winnerElements = getVerticalWinnerElements(oPersonSign);
+        if (!winnerElements.isEmpty()) {
+            return winnerElements;
+        }
+        winnerElements = getVerticalWinnerElements(xPersonSign);
+
+        if (!winnerElements.isEmpty()) {
+            return winnerElements;
+        }
+
+        winnerElements = getDiagonalWinnerElements(oPersonSign);
+        if (!winnerElements.isEmpty()) {
+            return winnerElements;
+        }
+        return getDiagonalWinnerElements(xPersonSign);
+
+    }
+
+    private List<Integer> getDiagonalWinnerElements(int playerSign) {
+        List<Integer> winnerElements = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == playerSign) {
+                    winnerElements.add(i);
+                    winnerElements.add(j);
+                    // primary diagonal check
+                    int count = 1;
+                    for (int k = 1; k < 5; k++) {
+                        if (!isOutOfBounds(i - k, j + k) && playerSign == matrix[i - k][j + k]) {
+                            count++;
+                            winnerElements.add(i - k);
+                            winnerElements.add(j + k);
+                        } else {
+                            count = 0;
+                            winnerElements.clear();
+                        }
+                    }
+                    if (count == 5) {
+                        return winnerElements;
+                    }
+                    // check secondary diagonal
+                    count = 1;
+                    winnerElements.add(i);
+                    winnerElements.add(j);
+                    for (int k = 1; k < 5; k++) {
+                        if (!isOutOfBounds(i + k, j + k) && playerSign == matrix[i + k][j + k]) {
+                            count++;
+                            winnerElements.add(i + k);
+                            winnerElements.add(j + k);
+                        } else {
+                            count = 0;
+                            winnerElements.clear();
+                        }
+                    }
+                    if (count == 5) {
+                        return winnerElements;
+                    }
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+
+    private List<Integer> getVerticalWinnerElements(int oPersonSign) {
+        List<Integer> winnerElements = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            int counter = 0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (!isOutOfBounds(j, i) && matrix[j][i] == oPersonSign) {
+                    counter++;
+                    winnerElements.add(j);
+                    winnerElements.add(i);
+                } else {
+                    counter = 0;
+                    winnerElements.clear();
+                }
+                if (counter >= 5) {
+                    return winnerElements;
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    private List<Integer> getHorizontalWinnerElements(int playerToCheck) {
+        List<Integer> winnerElements = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            int counter = 0;
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (!isOutOfBounds(i, j) && matrix[i][j] == playerToCheck) {
+                    counter++;
+                    winnerElements.add(i);
+                    winnerElements.add(j);
+                } else {
+                    counter = 0;
+                    winnerElements.clear();
+                }
+                if (counter >= 5) {
+                    return winnerElements;
+                }
+            }
+        }
+        return Collections.emptyList();
     }
 
     // evaluate vertical combinations
@@ -341,13 +466,13 @@ public class Game {
 
 
         // evaluate if ai is able to win in the next move
-        int hplus = evaluateHorizontal(aiSign, 5, matrix);
-        int vplus = evaluateVertical(aiSign, 5, matrix);
+        boolean hplus = checkHorizontal(aiSign, 5, matrix);
+        boolean vplus = checkVertical(aiSign, 5, matrix);
         int dplus = evaluateDiagonal(aiSign, 5, matrix);
 
         // if ai cna win it should always take the move
-        if (hplus > 0 || vplus > 0 || dplus > 0) {
-            return 1;
+        if (hplus || vplus || dplus > 0) {
+            return 1000;
         }
 
         // evaluate vertical for human
